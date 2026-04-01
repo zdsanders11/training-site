@@ -1,0 +1,327 @@
+/* Basic page defaults */
+
+*{ box-sizing: border-box;}
+
+body{
+    margin:0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.5;
+    background-image: url("images/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #e8eef7;
+}
+
+body.map-page {
+   background-image: none !important;
+    background-color: #07111f !important;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 15, 20, 0.20);
+    z-index: -1;
+}
+
+/* 2) Layout container */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* 3) Header + nav */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px;
+    border-bottom: 1px solid #223047;
+}
+
+.logo {
+    font-weight: 700;
+    text-decoration: none;
+    color: inherit;
+}
+
+.nav a {
+    margin-left: 14px;
+    text-decoration: none;
+    color: #a7b2c5;
+}
+
+.nav a:hover {
+    color:#e8eef7
+}
+
+/* 4) Hero section */
+.hero {
+    padding: 20px;
+    border: 1 px solid #223047;
+    border-radius: 14px;
+    background: #111826;
+}
+
+.hero h1 {
+    margin: 0 0 8px;
+    font-size: 40px;
+    line-height: 1.1;
+}
+
+.hero p {
+    margin: 0 0 14px;
+    color: #a7b2c5;
+    max-width: 70ch;
+}
+
+/* 5) Button */
+.btn {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #223047;
+    background: #4f8cff;
+    color: #07111f;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* 6) Card */
+.card {
+    margin-top: 16px;
+    padding: 20px;
+    border: 1px solid #223047;
+    border-radius: 14px;
+    background: #111826;
+}
+
+/* Footer */
+
+.site-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #223047;
+    text-align: center;
+    color: #a7b2c5;
+}
+
+.map-page {
+    background-image: url("images/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.map-wrap {
+    padding: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 14px;
+    border: 1px solid #223047;
+}
+
+.map-container {
+    position: relative;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 14px;
+}
+
+.hotspot {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(79, 140, 255, 0.25);
+    border: 2px dashed rgba(79, 140, 255, 0.8);
+    border-radius: 12px;
+    color: #e8eef7;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: background 0.2s ease, transform 0.2s ease;
+
+}
+
+.hotspot span {
+    background: rgba(11, 15, 20, 0.85);
+    padding: 6px 10px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+.hotspot:hover {
+    background: rgba(79, 140, 255, 0.45);
+    transform: scale(1.02);
+}
+
+
+/* Full width map area */
+
+.map-page .map-wrap {
+    padding: 0;
+    width: 100%;
+    max-width: none;
+}
+
+.map-viewport {
+    width: 100%;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+    position: relative;
+}
+
+.map-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+}
+
+.map-content.dragging {
+    cursor: grabbing;
+}
+
+.map-image {
+    width: 1600px;
+    height: auto;
+    display: block;
+    border-radius: 0;
+    pointer-events: none;
+}
+
+.hotspot {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(79, 140, 255, .20);
+    border: 2px dashed rgba(79, 140, 255, .8);
+    border-radius: 12px;
+
+    color: #e8eef7;
+    font-weight: 700;
+    text-decoration: none;
+
+}
+
+.hotspot span {
+  transform: scale(var(--label-scale, 1));
+}
+
+
+.hotspot span {
+    display: inline-block;
+    transform-origin: center;
+    pointer-events: none;
+}
+
+.hotspot:hover {
+    background: rgba(79, 140, 255, .40);
+}
+
+/* Zoom UI */
+.zoom-controls {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+.zoom-controls button {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #223047;
+  background: #111826;
+  color: #e8eef7;
+  cursor: pointer;
+}
+
+.zoom-controls button:hover {
+  background: #1a2436;
+}
+
+.map-viewport {
+    position: relative;
+    z-index: 1;
+}
+
+/* 12 hotspot starter placements (tweak these) */
+.hs-cooler  { top: 46%; left: 17%; width: 8%; height: 16%; }
+.hs-custard  { top: 50%; left: 44%; width: 8%; height: 12%; }
+.hs-dish { top: 52%; left: 31%; width: 13%; height: 9%; }
+.hs-dry   { top: 35%; left: 25%; width: 15%; height: 17%; }
+.hs-expo    { top: 48%; left: 53%; width: 4%; height: 18%; }
+.hs-dt1    { top: 62%; left: 17%; width: 7%; height: 14%; }
+.hs-dt2    { top: 66%; left: 51%; width: 6%; height: 10%; }
+.hs-make { top: 69%; left: 40%; width: 11%; height: 8%; }
+.hs-fry { top: 62%; left: 34%; width: 18%; height: 7%; }
+.hs-grill {top: 69%; left: 29%; width: 11%; height: 8%;}
+.hs-lobby    { top: 36%; left: 57%; width: 25%; height: 40%; }
+.hs-freezer  { top: 34%; left: 17%; width: 8%; height: 12%; }
+.hs-pepsi { top: 84%; left: 72%; width: 18%; height: 12%; }
+
+.hs-custardstorage { top: 46%; left: 22.5%; width: 2%; height: 5%; }
+.hs-steakburgers { top: 46%; left: 18%; width: 2%; height: 8%; }
+.hs-pickles { top: 58%; left: 18%; width: 3%; height: 3%; }
+.hs-toppings { top: 58%; left: 21%; width: 3.5%; height: 3%; }
+.hs-produce { top: 53%; left: 18%; width: 2%; height: 5%; }
+
+.hs-fries { top: 35%; left: 18%; width: 1.5%; height: 11%; }
+.hs-chicken { top: 35%; left: 19%; width: 4%; height: 4%; }
+.hs-freezertoppings { top: 35%; left: 23%; width: 2%; height: 6%; }
+.hs-sides { top: 40%; left: 23%; width: 2%; height: 5%; }
+
+
+
+.hs-grill1 { top: 69%; left: 29%; width: 5%; height: 6%; }
+.hs-grill2 { top: 69%; left: 34%; width: 4%; height: 6%; }
+.hs-bun { top: 69%; left: 38%; width: 4%; height: 6%; }
+.hs-make1 { top: 69%; left: 42%; width: 3%; height: 6%; }
+.hs-bagging { top: 69%; left: 45.5%; width: 5%; height: 6%; }
+
+.hotspot.is-hidden {
+  display: none;
+}
+
+.image-page {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.image-page img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+

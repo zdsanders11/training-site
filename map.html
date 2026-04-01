@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clickable Training Map</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preload" as="image" href="images/background3.webp" type="image/webp" fetchpriority="high" />
+  <style>
+    /* Blur-up progressive loading */
+    .map-image-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .map-image-placeholder {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #1a1a2e;
+      filter: blur(0);
+      transition: opacity 0.5s ease-out;
+      z-index: 0;
+    }
+    .map-image {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+    .map-image.loaded {
+      opacity: 1;
+    }
+    .map-image-placeholder.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body class="map-page">
+
+  <div class="header-divider"> </div>
+
+  <header class="site-header">
+    <a class="logo" href="map.html">
+      <img src="images/logo1.png" alt="Home">
+    </a>
+
+    <nav class="nav">
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+      
+      <a href="map.html" aria-current="page">Home</a>
+
+      <div class="dropdown">
+        <a href="map.html?z=4.69&x=0.223&y=0.417" class="dropbtn">Walk In Freezer</a>
+        <div class="dropdown-menu">
+          <a href="pages/fries.html">Fries</a>
+          <a href="pages/chicken.html">Chicken</a>
+          <a href="pages/sides.html">Sides</a>
+          <a href="pages/freezertoppings.html">Freezer Toppings</a>
+          <a href="pages/freezerbread.html">Hotline Other</a>
+
+
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=5.0&x=.2&y=0.535" class="dropbtn">Walk In Cooler</a>
+        <div class="dropdown-menu">
+          <a href="pages/steakburgers.html">Steakburgers</a>
+          <a href="pages/produce.html">Produce</a>
+          <a href="pages/pickles.html">Pickles</a>
+          <a href="pages/custardstorage.html">Custard</a>
+          <a href="pages/toppings.html">Toppings</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=3.77&x=0.291&y=0.436" class="dropbtn">Dry Storage</a>
+        <div class="dropdown-menu">
+          <a href="pages/frycups.html">Fry Cups</a>
+          <a href="pages/drinkcups.html">Drink Cups</a>
+          <a href="pages/dishes.html">Dishes & Lids</a>
+          <a href="pages/dishstorage.html">Dish Storage</a>
+          <a href="pages/pepsibibs.html">Pepsi BIBs</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=5.63&x=0.366&y=0.557" class="dropbtn">Dish</a>
+        <div class="dropdown-menu">
+          <a href="pages/spraysink.html">Spray Sink</a>
+          <a href="pages/dishwasher.html">Dishwasher</a>
+          <a href="pages/trisinks.html">Tri-Sinks</a>
+          <a href="pages/dishdrying.html">Dish Drying</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=7.00&x=0.473&y=0.563" class="dropbtn">Custard</a>
+        <div class="dropdown-menu">
+          <a href="pages/custardcooler.html">Custard Cooler</a>
+          <a href="pages/custardmake.html">Custard Toppings</a>
+          <a href="pages/custardmachine.html">4-Slot & Custard Machine</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=7.00&x=0.323&y=0.709" class="dropbtn">Grill</a>
+        <div class="dropdown-menu">
+          <a href="pages/grill0.html">Grill 0</a>
+          <a href="pages/grill1.html">Grill 1</a>
+          <a href="pages/grill2.html">Grill 2</a>
+          <a href="pages/grill2cooler.html">Grill 2 Cooler</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=7.00&x=0.418&y=0.717" class="dropbtn">Make</a>
+        <div class="dropdown-menu">
+          <a href="pages/bun.html">Bun</a>
+          <a href="pages/make.html">Make</a>
+          <a href="pages/bagging.html">Bagging</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=7.00&x=0.415&y=0.653" class="dropbtn">Fry</a>
+        <div class="dropdown-menu">
+          <a href="pages/prepsink.html">Prep Sink</a>
+          <a href="pages/fryfreezer.html">Fry Freezer</a>
+          <a href="pages/chickencooler.html">Chicken Cooler</a>
+          <a href="pages/fryer.html">Fryer</a>
+          <a href="pages/frywarmer.html">Fry Warmer</a>
+        </div>
+      </div>
+
+
+      <div class="dropdown">
+        <a href="map.html?z=7.00&x=0.189&y=0.693" class="dropbtn">Drive Thru</a>
+        <div class="dropdown-menu">
+          <a href="pages/dtwindow1.html">DT Pepsi</a>
+          <a href="pages/dtwindow2.html">DT First window</a>
+          <a href="pages/dthandout.html">DT Second Window</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <a href="map.html?z=2.11&x=0.600&y=0.553" class="dropbtn">Front of House</a>
+        <div class="dropdown-menu">
+          <a href="pages/register.html">Register</a>
+          <a href="expo.html">Expo</a>
+          <a href="pages/pepsi.html">Pepsi</a>
+          <a href="lobby.html">Lobby</a>
+        </div>
+      </div>
+
+
+
+
+    </nav>
+  </header>
+
+
+
+  <main class="map-wrap">
+    <div class="map-viewport" id="mapViewport">
+      <div class="map-content" id="mapContent">
+        <div class="map-image-wrapper">
+          <div class="map-image-placeholder" id="mapPlaceholder"></div>
+          <picture>
+            <source srcset="images/background3.webp" type="image/webp" />
+            <img src="images/background2.png" alt="Training map background" class="map-image" draggable="false" fetchpriority="high" decoding="async" id="mapImage" />
+          </picture>
+        </div>
+
+        <!--Overview-->
+        <a href="map.html?z=4.69&x=0.223&y=0.417" class="hotspot hs-freezer" data-min="0.6" data-max="2">
+          <span>Freezer</span> </a>
+        <a href="map.html?z=5.0&x=.2&y=0.535" class="hotspot hs-cooler" data-min="0.6"
+          data-max="2"><span>Cooler</span></a>
+        <a href="map.html?z=3.77&x=0.291&y=0.436" class="hotspot hs-dry" data-min="0.6" data-max="2"><span>Dry
+            Storage</span></a>
+        <a href="map.html?z=5.63&x=0.366&y=0.557" class="hotspot hs-dish" data-min="0.6"
+          data-max="2"><span>Dish</span></a>
+        <a href="map.html?z=7.00&x=0.473&y=0.563" class="hotspot hs-custard" data-min="0.6"
+          data-max="2"><span>Custard</span></a>
+        <a href="map.html?z=7.00&x=0.323&y=0.709" class="hotspot hs-grill" data-min="0.6"
+          data-max="2"><span>Grill</span></a>
+        <a href="map.html?z=7.00&x=0.418&y=0.717" class="hotspot hs-make" data-min="0.6"
+          data-max="2"><span>Make</span></a>
+        <a href="map.html?z=7.00&x=0.415&y=0.653" class="hotspot hs-fry" data-min="0.6"
+          data-max="2"><span>Fry</span></a>
+        <a href="map.html?z=7.00&x=0.189&y=0.693" class="hotspot hs-dt1" data-min="0.6" data-max="2"><span>Drive Thru
+            1</span></a>
+        <a href="map.html?z=7.00&x=0.503&y=0.696" class="hotspot hs-dt2" data-min="0.6" data-max="2"><span>Drive Thru
+            2</span></a>
+        <a href="expo.html" class="hotspot hs-expo" data-min="0.6" data-max="9"><span>Expo</span></a>
+        <a href="map.html?z=2.11&x=0.600&y=0.553" class="hotspot hs-lobby" data-min="0.6"
+          data-max="2"><span>Lobby</span></a>
+        <a href="pages/pepsi.html" class="hotspot hs-pepsi" data-min="0.6" data-max="9"><span>Pepsi</span></a>
+        <a href="pages/register.html" class="hotspot hs-register" data-min="0.6" data-max="9"><span>Register</span></a>
+
+
+        <!--Walk In Cooler-->
+        <a href="pages/custardstorage.html" class="hotspot hs-custardstorage" data-min="2"
+          data-max="9"><span>Custard</span></a>
+        <a href="pages/steakburgers.html" class="hotspot hs-steakburgers" data-min="2"
+          data-max="9"><span>Steakburgers</span></a>
+        <a href="pages/toppings.html" class="hotspot hs-toppings" data-min="2" data-max="9"><span>Toppings</span></a>
+        <a href="pages/pickles.html" class="hotspot hs-pickles" data-min="2" data-max="9"><span>Pickles</span></a>
+        <a href="pages/produce.html" class="hotspot hs-produce" data-min="2" data-max="9"><span>Produce</span></a>
+
+        <!--Walk In Freezer-->
+        <a href="pages/fries.html" class="hotspot hs-fries" data-min="2" data-max="9"><span>Fries</span></a>
+        <a href="pages/freezerbread.html" class="hotspot hs-freezerbread" data-min="2" data-max="9"><span>Hotline
+            Other</span></a>
+        <a href="pages/chicken.html" class="hotspot hs-chicken" data-min="2" data-max="9"><span>Chicken</span></a>
+        <a href="pages/freezertoppings.html" class="hotspot hs-freezertoppings" data-min="2" data-max="9"><span>Custard
+            Toppings</span></a>
+        <a href="pages/sides.html" class="hotspot hs-sides" data-min="2" data-max="9"><span>Sides</span></a>
+
+        <!--Hotline-->
+        <a href="pages/grill0.html" class="hotspot hs-grill0" data-min="2" data-max="9"><span>Grill 0</span></a>
+        <a href="pages/grill1.html" class="hotspot hs-grill1" data-min="2" data-max="9"><span>Grill 1</span></a>
+        <a href="pages/grill2.html" class="hotspot hs-grill2" data-min="2" data-max="9"><span>Grill 2</span></a>
+        <a href="pages/grill2cooler.html" class="hotspot hs-grill2cooler" data-min="2" data-max="9"><span>Grill 2
+            Cooler</span></a>
+        <a href="pages/bun.html" class="hotspot hs-bun" data-min="2" data-max="9"><span>Bun</span></a>
+        <a href="pages/make.html" class="hotspot hs-make1" data-min="2" data-max="9"><span>Make</span></a>
+        <a href="pages/bagging.html" class="hotspot hs-bagging" data-min="2" data-max="9"><span>Bagging</span></a>
+
+        <!--Fry-->
+        <a href="pages/fryfreezer.html" class="hotspot hs-fryfreezer" data-min="2" data-max="9"><span>Fry
+            Freezer</span></a>
+        <a href="pages/chickencooler.html" class="hotspot hs-chickencooler" data-min="2" data-max="9"><span>Chicken
+            Cooler</span></a>
+        <a href="pages/fryer.html" class="hotspot hs-fryer" data-min="2" data-max="9"><span>Fryer</span></a>
+        <a href="pages/frywarmer.html" class="hotspot hs-frywarmer" data-min="2" data-max="9"><span>Fry
+            Warmer</span></a>
+        <a href="pages/prepsink.html" class="hotspot hs-prepsink" data-min="2" data-max="9"><span>Prep Sink</span></a>
+
+        <!--Dry Storage-->
+        <a href="pages/frycups.html" class="hotspot hs-frycups" data-min="2" data-max="9"><span>Fry Cups</span></a>
+        <a href="pages/dishes.html" class="hotspot hs-dishes" data-min="2" data-max="9"><span>Dishes & Lids</span></a>
+        <a href="pages/drinkcups.html" class="hotspot hs-drinkcups" data-min="2" data-max="9"><span>Drink Cups &
+            Lids</span></a>
+        <a href="pages/pepsibibs.html" class="hotspot hs-pepsibibs" data-min="2" data-max="9"><span>Pepsi
+            BIBs</span></a>
+        <a href="pages/dishstorage.html" class="hotspot hs-dishstorage" data-min="2" data-max="9"><span>Dish
+            Storage</span></a>
+        <a href="pages/sauces.html" class="hotspot hs-sauces" data-min="2" data-max="9"><span>Sauces</span></a>
+        <a href="pages/otherdry.html" class="hotspot hs-otherdry" data-min="2" data-max="9"><span>Other Dry
+            Storage</span></a>
+
+
+        <!--Custard-->
+        <a href="pages/custardcooler.html" class="hotspot hs-custardcooler" data-min="2" data-max="9"><span>Custard
+            Cooler</span></a>
+        <a href="pages/custardmake.html" class="hotspot hs-custardmake" data-min="2" data-max="9"><span>Custard
+            Toppings</span></a>
+        <a href="pages/custardmachine.html" class="hotspot hs-custardmachine" data-min="2" data-max="9"><span>4 Slot &
+            Custard Machine</span></a>
+
+        <!--Dish-->
+        <a href="pages/spraysink.html" class="hotspot hs-spray" data-min="2" data-max="9"><span>Spray Sink</span></a>
+        <a href="pages/dishwasher.html" class="hotspot hs-dishwasher" data-min="2"
+          data-max="9"><span>Dishwasher</span></a>
+        <a href="pages/trisinks.html" class="hotspot hs-trisinks" data-min="2" data-max="9"><span>Tri-Sinks</span></a>
+        <a href="pages/dishdrying.html" class="hotspot hs-dishdrying" data-min="2" data-max="9"><span>Dish
+            Drying</span></a>
+
+        <!--Drive Thru-->
+        <a href="pages/dtwindow1.html" class="hotspot hs-dtwindow1" data-min="2" data-max="9"><span>DT Pepsi
+            Machine</span></a>
+        <a href="pages/dtwindow2.html" class="hotspot hs-dtwindow2" data-min="2" data-max="9"><span>DT
+            Window</span></a>
+        <a href="pages/dthandout.html" class="hotspot hs-dthandout" data-min="2" data-max="9"><span>DT Handout
+            Window</span></a>
+
+
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Zoom controls (outside mapContent so they don't move/scale) -->
+  <div class="zoom-controls">
+    <button id="zoomIn" aria-label="Zoom in">+</button>
+    <button id="zoomOut" aria-label="Zoom out">−</button>
+    <button id="zoomReset" aria-label="Reset zoom">⟳</button>
+  </div>
+
+
+  <!-- Progressive image loading -->
+  <script>
+    (function() {
+      var img = document.getElementById('mapImage');
+      var placeholder = document.getElementById('mapPlaceholder');
+      function reveal() {
+        img.classList.add('loaded');
+        if (placeholder) placeholder.classList.add('hidden');
+      }
+      if (img.complete && img.naturalWidth > 0) {
+        reveal();
+      } else {
+        img.addEventListener('load', reveal);
+      }
+    })();
+  </script>
+  <script src="assets/js/map-panzoom.js"></script>
+  <script src="assets/js/nav-active.js"></script>
+  <script src="assets/js/search.js"></script>
+</body>
+
+</html>
