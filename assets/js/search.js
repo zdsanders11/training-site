@@ -63,7 +63,7 @@ const searchData = [
   { name: "Lobby", url: "lobby.html", category: "Front of House" },
 
   // Main Map
-  { name: "Home / Main Map", url: "map.html", category: "General" }
+  { name: "Home / Main Map", url: "index.html", category: "General" }
 ];
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Determine the current page file name
     let currentPage = window.location.pathname.split('/').pop();
     if (!currentPage || currentPage === '') {
-        currentPage = 'map.html';
+        currentPage = 'index.html';
     }
 
     // Find all links in dropdown menus
