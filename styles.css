@@ -738,4 +738,15 @@ body {
     }
 }
 
+/* Dynamic Page Title */
+.page-title {
+  text-align: center;
+  color: #e8eef7;
+  margin-top: 24px;
+  margin-bottom: 0;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: 32px;
+  letter-spacing: 1px;
+}
+
 
