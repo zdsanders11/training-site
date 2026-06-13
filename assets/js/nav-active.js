@@ -1,7 +1,7 @@
 // nav-active.js
 document.addEventListener("DOMContentLoaded", () => {
     // Determine the current page file name
-    let currentPage = window.location.pathname.split('/').pop();
+    let currentPage = window.location.pathname.split(/[/\\]/).pop();
     if (!currentPage || currentPage === '') {
         currentPage = 'index.html';
     }

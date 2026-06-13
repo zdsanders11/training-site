@@ -122,7 +122,7 @@ function renderHeader(basePath) {
 
   // Dynamic Page Title Injection
   const path = window.location.pathname;
-  let pageName = path.substring(path.lastIndexOf('/') + 1);
+  let pageName = path.split(/[/\\]/).pop();
   
   // Don't add titles to the root index/map pages, only the sub-pages
   if (pageName && pageName !== 'index.html' && pageName !== 'map.html' && pageName !== '' && pageName.endsWith('.html')) {
