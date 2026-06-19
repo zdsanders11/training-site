@@ -23,12 +23,31 @@
 
   console.log("panzoom: buttons:", !!zoomInBtn, !!zoomOutBtn, !!zoomResetBtn);
 
-  // ---- Drag state ----
+  // ---- Drag & Pinch state ----
   let isDragging = false;
   let startX = 0;
   let startY = 0;
   let startTx = 0;
   let startTy = 0;
+
+  const activePointers = new Map();
+  let initialPinchDiff = -1;
+  let initialPinchScale = 1;
+  let initialPinchTx = 0;
+  let initialPinchTy = 0;
+
+  function getDistance(p1, p2) {
+    const dx = p1.clientX - p2.clientX;
+    const dy = p1.clientY - p2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function getMidpoint(p1, p2) {
+    return {
+      x: (p1.clientX + p2.clientX) / 2,
+      y: (p1.clientY + p2.clientY) / 2
+    };
+  }
 
   function clamp(v, min, max) {
     return Math.max(min, Math.min(max, v));
@@ -42,13 +61,19 @@
     const v = viewport.getBoundingClientRect();
     const c = content.getBoundingClientRect();
 
-    const minTx = v.width - c.width;
-    const minTy = v.height - c.height;
+    const isRotated = window.innerWidth <= 768;
+    const vWidth = isRotated ? v.height : v.width;
+    const vHeight = isRotated ? v.width : v.height;
+    const cWidth = isRotated ? c.height : c.width;
+    const cHeight = isRotated ? c.width : c.height;
 
-    if (c.width <= v.width) tx = (v.width - c.width) / 2;
+    const minTx = vWidth - cWidth;
+    const minTy = vHeight - cHeight;
+
+    if (cWidth <= vWidth) tx = (vWidth - cWidth) / 2;
     else tx = clamp(tx, minTx, 0);
 
-    if (c.height <= v.height) ty = (v.height - c.height) / 2;
+    if (cHeight <= vHeight) ty = (vHeight - cHeight) / 2;
     else ty = clamp(ty, minTy, 0);
   }
 
@@ -62,8 +87,12 @@
   // Zoom around viewport center (for + / - buttons)
   function zoomAtCenter(factor) {
     const v = viewport.getBoundingClientRect();
-    const cx = v.width / 2;
-    const cy = v.height / 2;
+    const isRotated = window.innerWidth <= 768;
+    const vWidth = isRotated ? v.height : v.width;
+    const vHeight = isRotated ? v.width : v.height;
+
+    const cx = vWidth / 2;
+    const cy = vHeight / 2;
 
     const prevScale = scale;
     scale = clamp(scale * factor, MIN_SCALE, MAX_SCALE);
@@ -78,9 +107,6 @@
     updateHotspotVisibility();
     updateLabelScale();
     updateHotspotBorderScale();
-
-
-
   }
 
   // ---- Wheel zoom (toward pointer) ----
@@ -124,34 +150,117 @@
     { passive: false }
   );
 
-  // ---- Drag pan ----
+  // ---- Drag pan & Pinch zoom ----
   viewport.addEventListener("pointerdown", (e) => {
     if (e.target.closest(".hotspot")) return;
-    isDragging = true;
-    content.classList.add("dragging");
+    activePointers.set(e.pointerId, e);
 
-    startX = e.clientX;
-    startY = e.clientY;
-    startTx = tx;
-    startTy = ty;
+    if (activePointers.size === 1) {
+      isDragging = true;
+      content.classList.add("dragging");
 
-    viewport.setPointerCapture(e.pointerId);
+      startX = e.clientX;
+      startY = e.clientY;
+      startTx = tx;
+      startTy = ty;
+
+      viewport.setPointerCapture(e.pointerId);
+    } else if (activePointers.size === 2) {
+      isDragging = false;
+      const pointers = Array.from(activePointers.values());
+      initialPinchDiff = getDistance(pointers[0], pointers[1]);
+      initialPinchScale = scale;
+      initialPinchTx = tx;
+      initialPinchTy = ty;
+    }
   });
 
   viewport.addEventListener("pointermove", (e) => {
-    if (!isDragging) return;
-    tx = startTx + (e.clientX - startX);
-    ty = startTy + (e.clientY - startY);
-    applyTransform();
+    if (!activePointers.has(e.pointerId)) return;
+    activePointers.set(e.pointerId, e);
+
+    if (activePointers.size === 1 && isDragging) {
+      let dx = e.clientX - startX;
+      let dy = e.clientY - startY;
+
+      if (window.innerWidth <= 768) {
+        // Rotate dragging deltas for 90deg clockwise container rotation
+        const temp = dx;
+        dx = dy;
+        dy = -temp;
+      }
+
+      tx = startTx + dx;
+      ty = startTy + dy;
+      applyTransform();
+    } else if (activePointers.size === 2) {
+      const pointers = Array.from(activePointers.values());
+      const currentDiff = getDistance(pointers[0], pointers[1]);
+      if (initialPinchDiff > 0 && currentDiff > 0) {
+        const factor = currentDiff / initialPinchDiff;
+        const prevScale = scale;
+        scale = clamp(initialPinchScale * factor, MIN_SCALE, MAX_SCALE);
+
+        // Zoom towards midpoint of two fingers
+        const mid = getMidpoint(pointers[0], pointers[1]);
+        const v = viewport.getBoundingClientRect();
+        
+        let mx = mid.x - v.left;
+        let my = mid.y - v.top;
+
+        if (window.innerWidth <= 768) {
+          // Rotate midpoint for 90deg container rotation
+          const temp = mx;
+          mx = my;
+          my = v.width - temp;
+        }
+
+        tx = mx - (mx - initialPinchTx) * (scale / prevScale);
+        ty = my - (my - initialPinchTy) * (scale / prevScale);
+
+        applyTransform();
+        clampToBounds();
+        applyTransform();
+        updateHotspotVisibility();
+        updateLabelScale();
+        updateHotspotBorderScale();
+      }
+    }
   });
 
-  viewport.addEventListener("pointerup", () => {
-    if (!isDragging) return;
-    isDragging = false;
-    content.classList.remove("dragging");
-    clampToBounds();
-    applyTransform();
-  });
+  const handlePointerUp = (e) => {
+    if (activePointers.has(e.pointerId)) {
+      activePointers.delete(e.pointerId);
+      try {
+        viewport.releasePointerCapture(e.pointerId);
+      } catch (err) {}
+    }
+
+    if (activePointers.size < 2) {
+      initialPinchDiff = -1;
+    }
+
+    if (activePointers.size === 0) {
+      if (isDragging) {
+        isDragging = false;
+        content.classList.remove("dragging");
+        clampToBounds();
+        applyTransform();
+      }
+    } else if (activePointers.size === 1) {
+      // Transition back to panning with the single remaining pointer
+      const remaining = Array.from(activePointers.values())[0];
+      isDragging = true;
+      content.classList.add("dragging");
+      startX = remaining.clientX;
+      startY = remaining.clientY;
+      startTx = tx;
+      startTy = ty;
+    }
+  };
+
+  viewport.addEventListener("pointerup", handlePointerUp);
+  viewport.addEventListener("pointercancel", handlePointerUp);
 
   // Double-click reset
   viewport.addEventListener("dblclick", () => {
@@ -236,10 +345,13 @@ function applyViewFromURL() {
 
   if (!Number.isNaN(x) && !Number.isNaN(y)) {
     const v = viewport.getBoundingClientRect();
+    const isRotated = window.innerWidth <= 768;
+    const vWidth = isRotated ? v.height : v.width;
+    const vHeight = isRotated ? v.width : v.height;
 
     // x,y are 0–1 percentages of the map image
-    tx = (v.width / 2) - (x * content.offsetWidth * scale);
-    ty = (v.height / 2) - (y * content.offsetHeight * scale);
+    tx = (vWidth / 2) - (x * content.offsetWidth * scale);
+    ty = (vHeight / 2) - (y * content.offsetHeight * scale);
   }
 
   applyTransform();

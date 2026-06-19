@@ -736,6 +736,54 @@ body {
     .search-input::placeholder {
         color: rgba(255, 255, 255, 0.7) !important;
     }
+
+    /* Rotate landscape diagrams 90 degrees to fit portrait mobile viewports */
+    .image-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 180px); /* Leave room for header, divider, and title */
+        padding: 8px;
+        overflow: hidden;
+    }
+
+    .image-page img {
+        /* Since the image is rotated 90deg, the constraints swap:
+           max-width applies to the rotated height (screen width)
+           max-height applies to the rotated width (screen height) */
+        max-width: 75vh;
+        max-height: 85vw;
+        transform: rotate(90deg);
+        transform-origin: center center;
+        width: auto;
+        height: auto;
+        border-radius: 12px;
+    }
+
+    /* Rotate main map 90 degrees to fit portrait mobile viewports */
+    .map-wrap {
+        width: 95vw !important;
+        height: 80vh !important;
+        margin: 12px auto !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .map-viewport {
+        /* Swap width and height for rotation */
+        width: 80vh !important;
+        height: 95vw !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) rotate(90deg) !important;
+        transform-origin: center center !important;
+    }
+
+    /* Hide zoom controls on mobile */
+    .zoom-controls {
+        display: none !important;
+    }
 }
 
 /* Dynamic Page Title */
