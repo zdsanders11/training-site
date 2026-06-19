@@ -1,9 +1,25 @@
 // nav-active.js
 document.addEventListener("DOMContentLoaded", () => {
-    // Determine the current page file name
-    let currentPage = window.location.pathname.split(/[/\\]/).pop();
-    if (!currentPage || currentPage === '') {
-        currentPage = 'index.html';
+    // Determine the current page file name (normalized without .html)
+    let path = '';
+    try {
+        path = decodeURIComponent(window.location.pathname || window.location.href);
+    } catch (e) {
+        path = window.location.pathname || window.location.href;
+    }
+
+    // Clean up query string and hash
+    if (path.includes('?')) {
+        path = path.split('?')[0];
+    }
+    if (path.includes('#')) {
+        path = path.split('#')[0];
+    }
+
+    let currentPage = path.split(/[/\\]/).pop();
+    currentPage = currentPage ? currentPage.replace(/\.html$/i, '').toLowerCase() : 'index';
+    if (currentPage === '') {
+        currentPage = 'index';
     }
 
     // Find all links in dropdown menus
@@ -14,10 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const hrefData = link.getAttribute('href');
         if (!hrefData) return;
         
-        // Handle parameters matching and base filenames
-        const linkBase = hrefData.split('?')[0].split('/').pop();
+        // Handle parameters matching and base filenames (normalized without .html)
+        let linkPath = '';
+        try {
+            linkPath = decodeURIComponent(hrefData.split('?')[0].split('#')[0]);
+        } catch (e) {
+            linkPath = hrefData.split('?')[0].split('#')[0];
+        }
+        let linkBase = linkPath.split('/').pop();
+        linkBase = linkBase ? linkBase.replace(/\.html$/i, '').toLowerCase() : '';
         
-        // Only highlight if it explicitly matches the current page HTML file
+        // Only highlight if it explicitly matches the current page
         if (linkBase === currentPage) {
             link.classList.add('active-nav-link');
             

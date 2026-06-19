@@ -74,7 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Determine prefix path for URLs since the script runs on multiple nested levels
   // If we are currently in /pages/, we need to go up one directory
-  const pathPrefix = window.location.pathname.includes('/pages/') || window.location.pathname.includes('\\pages\\') ? '../' : '';
+  let decodedPath = '';
+  try {
+    decodedPath = decodeURIComponent(window.location.pathname || window.location.href).toLowerCase();
+  } catch (e) {
+    decodedPath = (window.location.pathname || window.location.href).toLowerCase();
+  }
+  const pathPrefix = decodedPath.includes('/pages/') || decodedPath.includes('\\pages\\') ? '../' : '';
 
   searchInput.addEventListener("input", function() {
     const query = this.value.toLowerCase().trim();

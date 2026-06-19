@@ -121,12 +121,34 @@ function renderHeader(basePath) {
   `);
 
   // Dynamic Page Title Injection
-  const path = window.location.pathname;
+  let path = '';
+  try {
+    path = decodeURIComponent(window.location.pathname || window.location.href);
+  } catch (e) {
+    path = window.location.pathname || window.location.href;
+  }
+  
+  // Clean up query string and hash just in case
+  if (path.includes('?')) {
+    path = path.split('?')[0];
+  }
+  if (path.includes('#')) {
+    path = path.split('#')[0];
+  }
+
   let pageName = path.split(/[/\\]/).pop();
   
+  // Normalize page name by removing the .html extension if present and lowercasing it
+  const rawName = pageName ? pageName.replace(/\.html$/i, '').toLowerCase() : '';
+  
+  console.log("renderHeader - Debug Information:", {
+    path: path,
+    pageName: pageName,
+    rawName: rawName
+  });
+
   // Don't add titles to the root index/map pages, only the sub-pages
-  if (pageName && pageName !== 'index.html' && pageName !== 'map.html' && pageName !== '' && pageName.endsWith('.html')) {
-    const rawName = pageName.replace('.html', '');
+  if (rawName && rawName !== 'index' && rawName !== 'map' && rawName !== '') {
     
     const titleMap = {
       'freezertoppings': 'FREEZER TOPPINGS',
